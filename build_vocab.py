@@ -20,7 +20,7 @@ for file in Path(data_path).iterdir():
     if suffix == ".gui":
         with open(file, "r") as reader:
             raw_data = reader.read()
-            data = raw_data.replace('\n', ' ').replace(', ', ' ').split(' ')
+            data = raw_data.replace('\n', ' ').replace(', ', ' , ').split(' ')
             data.remove('')
             [all_tokens.add(el) for el in data]  
 

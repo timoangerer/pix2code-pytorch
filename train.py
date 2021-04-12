@@ -42,6 +42,7 @@ torch.cuda.manual_seed(args.seed)
 vocab = Vocab(args.vocab_file_path)
 assert len(vocab) > 0
 
+# Setup GPU
 use_cuda = True if args.cuda and torch.cuda.is_available() else False
 assert use_cuda  # Trust me, you don't want to train this model on a cpu.
 device = torch.device("cuda" if use_cuda else "cpu")

@@ -1,3 +1,6 @@
+import platform
+import os
+import subprocess
 import time
 import torch
 from pathlib import Path
@@ -68,3 +71,19 @@ def model_name_formated(model_name, stats_dict, delimiter="--"):
         file_name = file_name + delimiter + str(key) + "-" + str(value)
 
     return file_name
+
+
+def ids_to_tokens(vocab, ids):
+    tokens = []
+
+    for id in ids:
+        token = vocab.get_token_by_id(id)
+
+        if token == vocab.get_end_token():
+            break
+        if token == vocab.get_start_token() or token == ',':
+            continue
+
+        tokens.append(token)
+
+    return tokens

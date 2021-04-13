@@ -5,10 +5,11 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from dataset import Pix2CodeDataset
-from utils import collate_fn, save_model, ids_to_tokens
+from utils import collate_fn, save_model, ids_to_tokens, generate_visualization_object
 from models import Encoder, Decoder
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 import math
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='Evaluate the model')
 
@@ -20,6 +21,7 @@ parser.add_argument("--cuda", action='store_true',
                     default=True, help="Use cuda or not")
 parser.add_argument("--img_crop_size", type=int, default=224)
 parser.add_argument("--split", type=str, default="validation")
+parser.add_argument("--viz", type=bool, default=True)
 parser.add_argument("--batch_size", type=int, default=4)
 parser.add_argument("--epochs", type=int, default=15)
 parser.add_argument("--seed", type=int, default=2020,
@@ -62,7 +64,6 @@ transform_imgs = transforms.Compose([transforms.Resize((args.img_crop_size, args
                                                           std=[0.229, 0.224, 0.225])])
 
 # Creating the data loader
-print("Creating the data loader...")
 data_loader = DataLoader(
     Pix2CodeDataset(args.data_path, args.split,
                     vocab, transform=transform_imgs),
@@ -78,21 +79,25 @@ decoder.eval()
 
 predictions = []
 targets = []
-for i, (image, caption) in enumerate(data_loader.dataset):
-    print(i)
+for i, (image, caption) in enumerate(tqdm(data_loader.dataset)):
     image = image.to(device)
     caption = caption.to(device)
 
     features = encoder(image.unsqueeze(0))
-    
+
     sample_ids = decoder.sample(features)
     sample_ids = sample_ids.cpu().data.numpy()
-    
+
     predictions.append(sample_ids)
     targets.append(caption.cpu().numpy())
 
 predictions = [ids_to_tokens(vocab, prediction) for prediction in predictions]
 targets = [ids_to_tokens(vocab, target) for target in targets]
 
-bleu = corpus_bleu([[target] for target in targets], predictions, smoothing_function = SmoothingFunction().method4)
-print("BLUE score : {}".format(bleu))
+bleu = corpus_bleu([[target] for target in targets], predictions,
+                   smoothing_function=SmoothingFunction().method4)
+print("BLUE score: {}".format(bleu))
+
+if args.viz:
+    generate_visualization_object(data_loader.dataset, predictions, targets)
+    print("generated visualisation object")

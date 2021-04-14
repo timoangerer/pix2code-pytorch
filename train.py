@@ -12,27 +12,29 @@ import math
 parser = argparse.ArgumentParser(description='Train the model')
 
 parser.add_argument("--data_path", type=str,
-                    default=Path("data", "screenshot-description-pairs"), help="Datapath")
+                    default=Path("data", "web", "all_data"), help="Path to the dataset")
 parser.add_argument("--vocab_file_path", type=str,
-                    default=Path("data", "vocab.txt"), help="Path to the vocab file")
+                    default=None, help="Path to the vocab file")
 parser.add_argument("--cuda", action='store_true',
                     default=True, help="Use cuda or not")
 parser.add_argument("--img_crop_size", type=int, default=224)
 parser.add_argument("--split", type=str, default="train")
 parser.add_argument("--save_after_epochs", type=int, default=1,
-                    help="Save model checkpoint after n epochs")
+                    help="Save model checkpoint every n epochs")
 parser.add_argument("--models_dir", type=str, default=Path("models"),
-                    help="The dir where the trained models saved")
+                    help="The dir where the trained models are saved")
 parser.add_argument("--batch_size", type=int, default=4)
 parser.add_argument("--epochs", type=int, default=15)
 parser.add_argument("--lr", type=float, default=1e-3,
                     help="Learning Rate")
 parser.add_argument("--print_freq", type=int, default=1,
-                    help="The frequency to print message (epochs)")
+                    help="Print training stats every n epochs")
 parser.add_argument("--seed", type=int, default=2020,
-                    help="The random seed for reproducing ")
+                    help="The random seed for reproducing")
 
 args = parser.parse_args()
+args.vocab_file_path = args.vocab_file_path if args.vocab_file_path else Path(Path(args.data_path).parent, "vocab.txt")
+
 print("Training args:", args)
 
 torch.manual_seed(args.seed)
@@ -55,7 +57,6 @@ transform_imgs = transforms.Compose([transforms.Resize((args.img_crop_size, args
                                                           std=[0.229, 0.224, 0.225])])
 
 # Creating the data loader
-print("Creating the data loader...")
 train_loader = DataLoader(
     Pix2CodeDataset(args.data_path, args.split,
                     vocab, transform=transform_imgs),
@@ -64,6 +65,7 @@ train_loader = DataLoader(
     pin_memory=True if use_cuda else False,
     num_workers=4,
     drop_last=True)
+print("Created data loader")
 
 # Creating the models
 embed_size = 256
@@ -106,15 +108,15 @@ for epoch in range(args.epochs):
 
         if epoch % args.print_freq == 0 and i == 0:
             print(
-                f'Epoch : {epoch} || Loss : {loss} || Perplexity : {math.exp(loss)}')
+                f'Epoch : {epoch} || Loss : {loss:.4f} || Perplexity : {math.exp(loss):.4f}')
 
-        if epoch % args.save_after_epochs == 0 and i % len(train_loader) == 0:
-            print("Saving Models")
+        if epoch != 0 and epoch % args.save_after_epochs == 0 and i % len(train_loader) == 0:
             save_model(args.models_dir, encoder, decoder,
                        optimizer, epoch, loss, args.batch_size, vocab)
+            print("Saved model checkpoint")
 
 print("Done Training!")
 
-print("Saving final model")
 save_model(args.models_dir, encoder, decoder,
            optimizer, epoch, loss, args.batch_size, vocab)
+print("Saved final model")

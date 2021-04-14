@@ -1,0 +1,14 @@
+name: pix2code
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - torchvision=0.9.1
+  - pytorch=1.8.1
+  - cudatoolkit=10.2
+  - tqdm=4.60.0
+  - nltk=3.6.1
+  - pillow=8.2.0
+  - nb_conda_kernels=2.3.1
+  - jupyterlab=3.0.12

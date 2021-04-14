@@ -16,14 +16,14 @@ parser = argparse.ArgumentParser(description='Evaluate the model')
 parser.add_argument("--model_file_path", type=str,
                     help="Path to the trained model file", required=True)
 parser.add_argument("--data_path", type=str,
-                    default=Path("data", "screenshot-description-pairs"), help="Datapath")
+                    default=Path("data", "web", "all_data"), help="Datapath")
 parser.add_argument("--cuda", action='store_true',
                     default=True, help="Use cuda or not")
 parser.add_argument("--img_crop_size", type=int, default=224)
 parser.add_argument("--split", type=str, default="validation")
-parser.add_argument("--viz", type=bool, default=True)
+parser.add_argument("--viz", action='store_true',
+                    default=False,)
 parser.add_argument("--batch_size", type=int, default=4)
-parser.add_argument("--epochs", type=int, default=15)
 parser.add_argument("--seed", type=int, default=2020,
                     help="The random seed for reproducing ")
 

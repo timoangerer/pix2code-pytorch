@@ -11,7 +11,7 @@ class Pix2CodeDataset():
         self.vocab = vocab
 
         self.filenames = []
-        with open(Path(data_path.parent, f'{split}_dataset.txt'), "r") as reader:
+        with open(Path(Path(data_path).parent, f'{split}_dataset.txt'), "r") as reader:
             self.filenames = reader.read().split('\n')
             self.filenames.remove('')
 

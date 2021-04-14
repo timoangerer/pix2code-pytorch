@@ -5,10 +5,10 @@ from math import floor
 parser = argparse.ArgumentParser(description='Split the dataset into train, validation and test datasets')
 
 parser.add_argument("--data_path", type=str,
-                        default=Path("data", "screenshot-description-pairs"), help="Datapath")
+                        default=Path("data", "web", "all_data"), help="Datapath")
 
 args = parser.parse_args()
-data_path = args.data_path
+data_path = Path(args.data_path)
 
 TRAIN_PERCENT = 0.6
 TEST_PERCENT = 0.2

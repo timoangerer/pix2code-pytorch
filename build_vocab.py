@@ -1,18 +1,20 @@
 import argparse
 from pathlib import Path
 
-parser = argparse.ArgumentParser(description='Split the dataset into train, validation and test datasets')
+parser = argparse.ArgumentParser(description='Generate the vocabulary file based on the specifed dataset')
 
 parser.add_argument("--data_path", type=str,
-                        default=Path("data", "screenshot-description-pairs"), help="Datapath")
+                        default=Path("data", "web", "all_data"), help="Datapath")
 parser.add_argument("--vocab_output_path", type=str,
-                        default=Path("data", "vocab.txt"), help="Output path of the vocab file")            
+                        default=None, help="Output path of the vocab file")            
 
 args = parser.parse_args()
-data_path = args.data_path
+args.vocab_output_path = args.vocab_output_path if args.vocab_output_path else Path(Path(args.data_path).parent, "vocab.txt")
+
+data_path = Path(args.data_path)
 vocab_output_path = args.vocab_output_path
 
-all_tokens = set()
+all_tokens = dict() # dict used as ordered set since it preserves order
 for file in Path(data_path).iterdir():
     stem = file.stem
     suffix = file.suffix
@@ -22,7 +24,8 @@ for file in Path(data_path).iterdir():
             raw_data = reader.read()
             data = raw_data.replace('\n', ' ').replace(', ', ' , ').split(' ')
             data.remove('')
-            [all_tokens.add(el) for el in data]  
+            for el in data:
+                all_tokens[el] = el 
 
 
 # write the set of all tokens to a vocab file

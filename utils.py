@@ -9,7 +9,7 @@ import pickle
 # Taken from: https://github.com/yunjey/pytorch-tutorial/blob/0500d3df5a2a8080ccfccbc00aca0eacc21818db/tutorials/03-advanced/image_captioning/data_loader.py#L56
 
 
-def collate_fn(data):
+def collate_fn(data=None, vocab=None):
     """Creates mini-batch tensors from the list of tuples (image, caption).
 
     We should build custom collate_fn rather than using default collate_fn, 
@@ -23,6 +23,9 @@ def collate_fn(data):
         targets: torch tensor of shape (batch_size, padded_length).
         lengths: list; valid length for each padded caption.
     """
+    # Vocab is neccessary to get the ID of the padding token
+    assert vocab
+
     # Sort a data list by caption length (descending order).
     data.sort(key=lambda x: len(x[1]), reverse=True)
     images, captions = zip(*data)
@@ -32,7 +35,9 @@ def collate_fn(data):
 
     # Merge captions (from tuple of 1D tensor to 2D tensor).
     lengths = [len(cap) for cap in captions]
-    targets = torch.zeros(len(captions), max(lengths)).long()
+    padding_token_id = vocab.get_id_by_token(vocab.get_padding_token())
+    # Initalize a tensor with the id of the padding token
+    targets = torch.ones(len(captions), max(lengths)).long() * padding_token_id
     for i, cap in enumerate(captions):
         end = lengths[i]
         targets[i, :end] = cap[:end]
@@ -89,12 +94,14 @@ def ids_to_tokens(vocab, ids):
 
     return tokens
 
+
 def generate_visualization_object(dataset, predictions, targets):
     vis_obj = dict()
 
     vis_obj["predictions"] = predictions
     vis_obj["targets"] = targets
-    vis_obj["targets_filepaths"] = [ Path(dataset.data_path, filename).absolute().with_suffix(".png") for filename in dataset.filenames]
+    vis_obj["targets_filepaths"] = [Path(dataset.data_path, filename).absolute(
+    ).with_suffix(".png") for filename in dataset.filenames]
 
     with open(Path("tmp_viz_obj").with_suffix(".pkl"), "wb") as writer:
         pickle.dump(vis_obj, writer, protocol=pickle.HIGHEST_PROTOCOL)

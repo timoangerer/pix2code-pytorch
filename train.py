@@ -33,7 +33,8 @@ parser.add_argument("--seed", type=int, default=2020,
                     help="The random seed for reproducing")
 
 args = parser.parse_args()
-args.vocab_file_path = args.vocab_file_path if args.vocab_file_path else Path(Path(args.data_path).parent, "vocab.txt")
+args.vocab_file_path = args.vocab_file_path if args.vocab_file_path else Path(
+    Path(args.data_path).parent, "vocab.txt")
 
 print("Training args:", args)
 
@@ -61,7 +62,7 @@ train_loader = DataLoader(
     Pix2CodeDataset(args.data_path, args.split,
                     vocab, transform=transform_imgs),
     batch_size=args.batch_size,
-    collate_fn=collate_fn,
+    collate_fn=lambda data: collate_fn(data, vocab=vocab),
     pin_memory=True if use_cuda else False,
     num_workers=4,
     drop_last=True)

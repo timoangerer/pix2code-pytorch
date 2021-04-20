@@ -1,15 +1,16 @@
 import json
 
-START_TOKEN = "<s>"
-END_TOKEN = "</s>"
-PADDING_TOKEN = "<pad>"
-UNKOWN_TOKEN = "<unk>"
+START_TOKEN = "START"
+END_TOKEN = "END"
+PADDING_TOKEN = "PADDING"
+UNKOWN_TOKEN = "UNKNOWN"
+
 
 class Vocab():
 
     def __init__(self, vocab_path=None):
 
-        init_tokens = [START_TOKEN, END_TOKEN]
+        init_tokens = [START_TOKEN, END_TOKEN, PADDING_TOKEN, UNKOWN_TOKEN]
 
         self.token_to_id = dict()
         self.id_to_token = dict()
@@ -35,13 +36,13 @@ class Vocab():
 
     def get_token_by_id(self, id):
         if not id in self.id_to_token:
-            return self.id_to_token["<unk>"]
+            return self.id_to_token[UNKOWN_TOKEN]
         else:
             return self.id_to_token[id]
 
     def get_id_by_token(self, token):
         if not token in self.token_to_id:
-            return self.token_to_id["<unk>"]
+            return self.token_to_id[UNKOWN_TOKEN]
         else:
             return self.token_to_id[token]
 
@@ -50,6 +51,9 @@ class Vocab():
 
     def get_end_token(self):
         return END_TOKEN
+
+    def get_padding_token(self):
+        return PADDING_TOKEN
 
     def __str__(self):
         return json.dumps(self.token_to_id)

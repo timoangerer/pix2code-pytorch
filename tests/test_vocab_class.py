@@ -10,7 +10,4 @@ def valid_vocab_path():
 
 def test_vocab_creation(valid_vocab_path):
     vocab = Vocab(valid_vocab_path)
-    vocab_str = str(vocab)
-    print("looooo")
-    print(vocab)
-    assert len(vocab) == 14 + 4
+    assert vocab.get_id_by_token(vocab.get_padding_token())

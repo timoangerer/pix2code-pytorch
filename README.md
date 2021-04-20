@@ -61,7 +61,7 @@ Follow the follwing steps to train and evaluate the model localy on your machine
 
     Run `build_vocab.py` to generate a vocabulary file based on the tokens that appear in the specified dataset.
 
-        python `build_vocab.py` --data_path=./data/web/all_data
+        python build_vocab.py --data_path=./data/web/all_data
 
     This is what the `data` folder should look like up to this point:
 

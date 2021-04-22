@@ -92,7 +92,7 @@ targets = [ids_to_tokens(vocab, target) for target in targets]
 
 bleu = corpus_bleu([[target] for target in targets], predictions,
                    smoothing_function=SmoothingFunction().method4)
-print("BLUE score: {}".format(bleu))
+print("BLEU score: {}".format(bleu))
 
 if args.viz:
     generate_visualization_object(data_loader.dataset, predictions, targets)

@@ -55,12 +55,12 @@ class Decoder(nn.Module):
 
         return output
 
-    def sample(self, features, states=None):
+    def sample(self, features, states=None, longest_sentence_length=100):
 
         sampled_ids = []
         inputs = features.unsqueeze(1)
 
-        for i in range(100):
+        for i in range(longest_sentence_length):
 
             hidden, states = self.lstm(inputs, states)
 

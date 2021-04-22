@@ -36,7 +36,7 @@ class Vocab():
 
     def get_token_by_id(self, id):
         if not id in self.id_to_token:
-            return self.id_to_token[UNKOWN_TOKEN]
+            return self.id_to_token[self.token_to_id[UNKOWN_TOKEN]]
         else:
             return self.id_to_token[id]
 

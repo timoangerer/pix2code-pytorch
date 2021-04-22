@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from dataset import Pix2CodeDataset
-from utils import collate_fn, save_model, ids_to_tokens, generate_visualization_object
+from utils import collate_fn, save_model, ids_to_tokens, generate_visualization_object, resnet_img_transformation
 from models import Encoder, Decoder
 from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 import math
@@ -57,11 +57,7 @@ decoder.load_state_dict(loaded_model["decoder_model_state_dict"])
 encoder = encoder.to(device)
 decoder = decoder.to(device)
 
-# Image transformation function for resnet152: https://pytorch.org/docs/stable/torchvision/models.html
-transform_imgs = transforms.Compose([transforms.Resize((args.img_crop_size, args.img_crop_size)),
-                                     transforms.ToTensor(),
-                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                          std=[0.229, 0.224, 0.225])])
+transform_imgs = resnet_img_transformation(args.img_crop_size)
 
 # Creating the data loader
 data_loader = DataLoader(

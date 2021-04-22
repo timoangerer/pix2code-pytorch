@@ -3,9 +3,8 @@ from pathlib import Path
 from vocab import Vocab
 import torch
 from torch.utils.data import DataLoader
-from torchvision import transforms
 from dataset import Pix2CodeDataset
-from utils import collate_fn, save_model
+from utils import collate_fn, save_model, resnet_img_transformation
 from models import Encoder, Decoder
 import math
 
@@ -50,12 +49,7 @@ use_cuda = True if args.cuda and torch.cuda.is_available() else False
 assert use_cuda  # Trust me, you don't want to train this model on a cpu.
 device = torch.device("cuda" if use_cuda else "cpu")
 
-
-# Image transformation function for resnet152: https://pytorch.org/docs/stable/torchvision/models.html
-transform_imgs = transforms.Compose([transforms.Resize((args.img_crop_size, args.img_crop_size)),
-                                     transforms.ToTensor(),
-                                     transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                          std=[0.229, 0.224, 0.225])])
+transform_imgs = resnet_img_transformation(args.img_crop_size)
 
 # Creating the data loader
 train_loader = DataLoader(

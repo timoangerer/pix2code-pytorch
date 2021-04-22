@@ -5,6 +5,7 @@ import time
 import torch
 from pathlib import Path
 import pickle
+from torchvision import transforms
 
 # Taken from: https://github.com/yunjey/pytorch-tutorial/blob/0500d3df5a2a8080ccfccbc00aca0eacc21818db/tutorials/03-advanced/image_captioning/data_loader.py#L56
 
@@ -42,6 +43,15 @@ def collate_fn(data=None, vocab=None):
         end = lengths[i]
         targets[i, :end] = cap[:end]
     return images, targets, lengths
+
+# Image transformation function for resnet152: https://pytorch.org/docs/stable/torchvision/models.html
+
+
+def resnet_img_transformation(img_crop_size):
+    return transforms.Compose([transforms.Resize((img_crop_size, img_crop_size)),
+                               transforms.ToTensor(),
+                               transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                    std=[0.229, 0.224, 0.225])])
 
 
 def save_model(models_folder_path, encoder, decoder, optimizer, epoch, loss, batch_size, vocab):

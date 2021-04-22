@@ -1,5 +1,5 @@
 import pytest
-from html_transpiler import HTMLTranspiler
+from html_transpiler.html_transpiler import HTMLTranspiler
 from pathlib import Path
 
 @pytest.fixture

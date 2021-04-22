@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 from vocab import Vocab
-from data_loader import Pix2CodeDataset
+from dataset import Pix2CodeDataset
 from PIL import Image
 from torch import Tensor
 
